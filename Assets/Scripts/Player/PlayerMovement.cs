@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector2 timeToFullSpeed;
     [SerializeField] private Vector2 timeToStop;
     [SerializeField] private Vector2 stopClamp;
+    [SerializeField] private Vector2 minBoundary;
+    [SerializeField] private Vector2 maxBoundary;
 
     private Vector2 moveDirection;
     private Vector2 moveVelocity;
@@ -35,6 +37,9 @@ public class PlayerMovement : MonoBehaviour
             -2f * maxSpeed.x / (timeToStop.x * timeToStop.x),
             -2f * maxSpeed.y / (timeToStop.y * timeToStop.y)
         );
+
+        // Menambah lebar boundary sebesar 2 unit dan tinggi sebesar 1 unit
+        AdjustBoundary(8.6f, 8.6f, 4.4f, 5f);
     }
 
     private void FixedUpdate()
@@ -76,6 +81,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         rb.velocity = currentVelocity;
+
+        // Boundary check
+        Vector2 newPosition = rb.position;
+        newPosition.x = Mathf.Clamp(newPosition.x, minBoundary.x, maxBoundary.x);
+        newPosition.y = Mathf.Clamp(newPosition.y, minBoundary.y, maxBoundary.y);
+        rb.position = newPosition;
     }
 
     public Vector2 GetFriction()
@@ -90,5 +101,14 @@ public class PlayerMovement : MonoBehaviour
     {
         return Mathf.Abs(rb.velocity.x) > stopClamp.x || 
                Mathf.Abs(rb.velocity.y) > stopClamp.y;
+    }
+
+    // Metode untuk menyesuaikan boundary
+    public void AdjustBoundary(float leftAdjustment, float rightAdjustment, float topAdjustment, float bottomAdjustment)
+    {
+        minBoundary.x -= leftAdjustment;
+        maxBoundary.x += rightAdjustment;
+        minBoundary.y -= bottomAdjustment;
+        maxBoundary.y += topAdjustment;
     }
 }
