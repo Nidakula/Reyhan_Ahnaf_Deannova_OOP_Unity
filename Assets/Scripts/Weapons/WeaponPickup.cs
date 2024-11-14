@@ -4,78 +4,65 @@ using UnityEngine;
 
 public class WeaponPickup : MonoBehaviour
 {
-    [SerializeField] private Weapon weaponHolder; // Weapon object assigned in the Inspector
-    private Weapon weapon; // Weapon to be picked up by the player
-    private BoxCollider2D boxCollider; // BoxCollider2D component
+    [SerializeField] Weapon weaponHolder;
+    Weapon weapon;
 
-    // Called when the script instance is being loaded
-    void Awake()
+    private void Awake()
     {
-        // Initialize weapon with weaponHolder
-        weapon = weaponHolder;
-
-        // Get the BoxCollider2D component attached to the GameObject
-        boxCollider = GetComponent<BoxCollider2D>();
-
-        // Ensure the BoxCollider2D is set as a trigger
-        if (boxCollider != null)
+        if (weaponHolder != null)
         {
-            boxCollider.isTrigger = true;
+            weapon = Instantiate(weaponHolder, transform.position, transform.rotation);
+            weapon.gameObject.SetActive(false);
         }
     }
 
-    // Called before the first frame update
-    void Start()
+    private void Start()
     {
-        // If weapon is not null, disable all visual components initially
+        Debug.Log("WeaponPickup started");
         if (weapon != null)
         {
             TurnVisual(false);
         }
     }
 
-    // Called when another collider enters the trigger collider attached to the GameObject
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check if the object colliding is the player by checking the tag
-        if (other.gameObject.CompareTag("Player"))
+        Debug.Log("Triggered");
+        if (other.CompareTag("Player"))
         {
-            // Set the parent of the weapon to be the player
-            weapon.transform.parent = other.transform;
+            if (weapon != null)
+            {
+                Debug.Log("Weapon found");
+                Weapon currentWeapon = other.GetComponentInChildren<Weapon>();
 
-            // Enable the weapon's visuals
-            TurnVisual(true, weapon);
+                if (currentWeapon != null)
+                {
+                    Debug.Log("Weapon found in player");
+                    currentWeapon.gameObject.SetActive(false);
+                }
 
-            // Optionally, you could disable the pickup object to prevent further interaction
-            gameObject.SetActive(false); // Disable the WeaponPickup object after pickup
+                Weapon newWeapon = Instantiate(weapon, other.transform);
+                newWeapon.transform.localPosition = new Vector3(0, 0, 1);
+                newWeapon.gameObject.SetActive(true);
+
+                TurnVisual(true, newWeapon);
+            }
         }
     }
 
-    // Method to enable or disable all visual components of the weapon
-    void TurnVisual(bool on)
-    {
-        // Use the overloaded method to enable/disable visuals on the main weapon
-        TurnVisual(on, weapon);
-    }
-
-    // Overloaded method to enable weapon visuals with a specified weapon
-    void TurnVisual(bool on, Weapon weapon)
+    private void TurnVisual(bool on)
     {
         if (weapon != null)
         {
-            // Enable or disable the Animator component
-            Animator animator = weapon.GetComponent<Animator>();
-            if (animator != null)
-            {
-                animator.enabled = on;
-            }
+            weapon.gameObject.SetActive(on);
+        }
+    }
 
-            // Enable or disable the SpriteRenderer component
-            SpriteRenderer spriteRenderer = weapon.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.enabled = on;
-            }
+    private void TurnVisual(bool on, Weapon weapon)
+    {
+        if (weapon != null)
+        {
+            weapon.gameObject.SetActive(on);
         }
     }
 }
