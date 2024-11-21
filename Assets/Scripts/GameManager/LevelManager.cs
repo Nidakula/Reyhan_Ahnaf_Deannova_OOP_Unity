@@ -22,7 +22,7 @@ public class LevelManager : MonoBehaviour
 
         SceneManager.LoadSceneAsync(sceneName);
 
-        animator.SetTrigger("endTransition");
+        animator.SetTrigger("EndTransition");
 
         Player.Instance.transform.position = new(0, -4.5f);
     }

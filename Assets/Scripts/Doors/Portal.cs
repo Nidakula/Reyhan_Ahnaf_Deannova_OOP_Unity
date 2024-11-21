@@ -17,12 +17,12 @@ public class Portal : MonoBehaviour
         if (Vector2.Distance(transform.position, newPosition) < 0.5f)
             ChangePosition();
 
-
         if (GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Weapon>() != null)
         {
             GetComponent<SpriteRenderer>().enabled = true;
             GetComponent<Collider2D>().enabled = true;
             transform.position = Vector2.Lerp(transform.position, newPosition, speed * Time.deltaTime);
+            transform.Rotate(Vector3.forward * rotateSpeed * Time.deltaTime);
         }
         else
         {
